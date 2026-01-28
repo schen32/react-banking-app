@@ -20,9 +20,11 @@ import {
 import { Input } from "@/components/ui/input";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof authFormSchema>>({
     resolver: zodResolver(authFormSchema),
@@ -34,7 +36,11 @@ const AuthForm = ({ type }: { type: string }) => {
   });
 
   const onSubmit = (values: z.infer<typeof authFormSchema>) => {
+    setIsLoading(true);
+
     console.log(values);
+
+    setIsLoading(false);
   };
 
   return (
@@ -87,9 +93,36 @@ const AuthForm = ({ type }: { type: string }) => {
                 label="Password"
                 placeholder="Enter your password"
               ></CustomInput>
-              <Button type="submit">Submit</Button>
+              <div className="flex flex-col gap-4">
+                <Button type="submit" className="form-btn" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin"></Loader2>{" "}
+                      &nbsp; Loading...
+                    </>
+                  ) : type === "sign-in" ? (
+                    "Sign In"
+                  ) : (
+                    "Sign Up"
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
+
+          <footer className="flex justify-center gap-1">
+            <p className="text-14 text-normal text-gray-600">
+              {type === "sign-in"
+                ? "Don't have an Account?"
+                : "Already have an account?"}
+            </p>
+            <Link
+              className="form-link"
+              href={type === "sign-in" ? "/sign-up" : "/sign-in"}
+            >
+              {type === "sign-in" ? "Sign Up" : "Sign In"}
+            </Link>
+          </footer>
         </>
       )}
     </section>
